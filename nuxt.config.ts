@@ -5,6 +5,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+    redisHost: process.env.REDIS_HOST || '127.0.0.1',
+    redisPort: process.env.REDIS_PORT || '6379',
+    redisPassword: process.env.REDIS_PASSWORD,
+    redisTls: process.env.REDIS_TLS === 'true',
     public: {
       spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
       spotifyState: process.env.SPOTIFY_STATE,
@@ -16,10 +20,5 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss()
     ]
-  },
-  plugins: [
-    '~/plugins/pinia-persist.js'
-  ],
-
-  modules: ["@pinia/nuxt"]
+  }
 });

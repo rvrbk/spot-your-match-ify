@@ -6,19 +6,18 @@
 
 <script setup>
     import { onMounted } from 'vue';
-    import { useSpotifyAuthStore } from '~/stores/spotifyAuthStore';
-
-    const spotifyAuthStore = useSpotifyAuthStore();
 
     onMounted(() => {
-        window.addEventListener('message', (e) => {
+        window.addEventListener('message', async (e) => {
             const { source, code, state } = e.data;
 
             const config = useRuntimeConfig();
             
             if (source === 'spotify-auth') {
                 if (code && state === config.public.spotifyState) {
-                    spotifyAuthStore.setCode(code);
+                    const access_token = await $fetch(`/api/spotify/login?code=${code}`);
+
+                    console.log(access_token);
                 }
             }
         });
