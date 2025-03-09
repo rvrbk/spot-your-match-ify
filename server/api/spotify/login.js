@@ -23,8 +23,9 @@ export default defineEventHandler(async (e) => {
                     },
                     data: new URLSearchParams({
                         grant_type: 'refresh_token',
-                        refresh_token: query.refreshToken,
-                        client_id: config.public.spotifyClientId
+                        refresh_token: refreshToken,
+                        client_id: config.public.spotifyClientId,
+                        client_secret: config.spotifyClientSecret
                     })
                 });
 
