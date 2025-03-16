@@ -59,7 +59,8 @@ export default defineEventHandler(async (e) => {
 
             return response.data.access_token;
         }
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error fetching Spotify access token:', error);
         throw error;
     }

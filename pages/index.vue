@@ -6,10 +6,10 @@
 
 <script setup>
     import { onMounted } from 'vue';
-    import { useSpotify } from '~/composables/useSpotify'
+    import { useSpotify } from '~/composables/useSpotify';
 
     onMounted(() => {
-        const { getUserProfile, getTopTracks, isLoading, error } = useSpotify();
+        const { getTopTracks } = useSpotify();
 
         window.addEventListener('message', async (e) => {
             const { source, code, state } = e.data;
@@ -20,9 +20,22 @@
                 if (code && state === config.public.spotifyState) {
                     const accessToken = await $fetch(`/api/spotify/login?code=${code}`);
 
-                    const topTracks = await getTopTracks(accessToken);
+                    const { data } = await getTopTracks(accessToken, 'long_term', 50);
 
-                    console.log(topTracks);
+                    const songs = data.items.map((item) => {
+                        let artists = item.artists.map((artist) => {
+                            return artist.name; 
+                        });
+
+                        return `${item.name} by ${artists.join(' and ')}`;
+                    });
+
+                    const completion = await $fetch('/api/huggingface/analysis', {
+                        method: 'post',
+                        body: {
+                            songs
+                        }
+                    });
                 }
             }
         });
