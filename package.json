@@ -11,10 +11,16 @@
   },
   "dependencies": {
     "@huggingface/inference": "^3.5.2",
+    "@prisma/client": "^6.5.0",
+    "@supabase/supabase-js": "^2.49.1",
     "@tailwindcss/postcss": "^4.0.9",
     "@tailwindcss/vite": "^4.0.9",
     "axios": "^1.8.1",
+    "chromadb": "^2.0.1",
+    "chromadb-default-embed": "^2.14.0",
+    "markdown-it": "^14.1.0",
     "nuxt": "^3.15.4",
+    "openai": "^4.87.3",
     "redis": "^4.7.0",
     "vue": "latest",
     "vue-router": "latest"
