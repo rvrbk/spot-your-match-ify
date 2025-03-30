@@ -1,19 +1,28 @@
 import { HfInference } from '@huggingface/inference';
 
 export default defineEventHandler(async (e) => {
-    const { songs } = await readBody(e);
+    const { profile } = await readBody(e);
     const config = useRuntimeConfig();
 
     const messages = [{ 
         role: 'system', 
         content: `
-        You are a helpful creative psychiatrist who determines peoples personalities by looking at the songs they listen to. Besides that, 
-        give an in-depth analasys of who I might prefer as a romantic partner and why. Mention a few songs on which you based the analysis.
-        Respond in markdown.
+        You are a color mood expert and suggest colors based on a profile of someone. Suggest 3 colors in hex codes based on the profile profived to you
+        by the user. Respond only in json format, for example: 
+        [{
+            description: \'Golden Beige\',
+            color: #7d7356
+        }, {
+            description: \'Army Green\',
+            color: #7fba93
+        }, {
+            description: \'Baby Purple\',
+            color: #a672a8
+        }]
         `
     },{ 
         role: 'user', 
-        content: songs
+        content: profile
     }];
       
     const formattedMessages = messages.map((message) => {

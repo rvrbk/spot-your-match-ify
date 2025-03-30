@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Sex {
+  Male
+  Female
+}
+
+// User model
+model User {
+  id              Int             @id @default(autoincrement())
+  spotifyId       String          @unique
+  email           String?
+  displayName     String?         @map("display_name")
+  country         String?
+  profileImageUrl String?         @map("profile_image_url")
+  sex             Sex?
+  preference      Sex?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  @@map("users")
+}

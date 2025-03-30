@@ -47,5 +47,5 @@ export function useSpotify() {
         getUserProfile,
         getRecentlyPlayed,
         getTopTracks
-      }
+    }
 }
