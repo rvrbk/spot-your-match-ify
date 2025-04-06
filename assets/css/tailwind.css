@@ -1,0 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Permanent+Marker&family=Titan+One&family=Yesteryear&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: theme('colors.brazilYellow');
+    overflow-x: hidden;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+  
+.animate-spin {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 theme('colors.brazilGreen');
+    }
+    50% {
+        box-shadow: 0 0 16px 1px theme('colors.brazilGreen');
+    }
+}
+  
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+  
+
+.button {
+    &.active {
+        @apply border-brazilGreen bg-brazilYellow text-brazilGreen
+    }
+
+    @apply px-6 py-2 border border-brazilYellow hover:border-brazilGreen rounded-sm bg-brazilGreen text-brazilYellow hover:bg-brazilYellow hover:text-brazilGreen transition-colors;
+}
+
+.select {
+    @apply block w-full bg-brazilYellow border border-brazilGreen py-1 px-3 shadow-sm focus:outline-none sm:text-sm;
+}
