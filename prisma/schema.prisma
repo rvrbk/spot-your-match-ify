@@ -12,6 +12,11 @@ enum Sex {
   Female
 }
 
+enum Goal {
+  Friends
+  Romance
+}
+
 // User model
 model User {
   id              Int             @id @default(autoincrement())
@@ -22,6 +27,7 @@ model User {
   profileImageUrl String?         @map("profile_image_url")
   sex             Sex?
   preference      Sex?
+  goal            Goal? 
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
 
