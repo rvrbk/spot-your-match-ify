@@ -30,6 +30,10 @@
     }, {
         to: '/matches',
         label: 'Matches'
+    },
+    {
+        to: '/plans',
+        label: 'Plans'
     }, {
         to: '/about',
         label: 'About'

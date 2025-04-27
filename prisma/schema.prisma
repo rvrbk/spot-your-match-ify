@@ -1,10 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("POSTGRE_URL")
 }
 
 enum Sex {
@@ -17,9 +18,9 @@ enum Goal {
   Romance
 }
 
-// User model
 model User {
   id              Int             @id @default(autoincrement())
+  uuid            String?         @default(uuid()) @unique
   spotifyId       String          @unique
   email           String?
   displayName     String?         @map("display_name")
@@ -27,8 +28,8 @@ model User {
   profileImageUrl String?         @map("profile_image_url")
   sex             Sex?
   preference      Sex?
-  goal            Goal? 
-  createdAt       DateTime        @default(now()) @map("created_at")
+  goal            Goal?
+  createdAt       DateTime        @updatedAt @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
 
   @@map("users")
