@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "matches" ALTER COLUMN "distance" SET DATA TYPE DOUBLE PRECISION;

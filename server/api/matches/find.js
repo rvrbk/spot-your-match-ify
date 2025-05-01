@@ -3,7 +3,8 @@ import prisma from '~/server/utils/prisma';
 import { ChromaClient } from 'chromadb';
 
 export default defineEventHandler(async (e) => {
-    const { userUuid } = getQuery(e);
+    const { userUuid } = await getQuery(e);
+    const config = useRuntimeConfig();
 
     try {
         const chromaClient = new ChromaClient();
@@ -13,65 +14,64 @@ export default defineEventHandler(async (e) => {
                 uuid: userUuid
             }
         });
+        
+        const { sex, preference, goal } = user;
 
-        let collection = await chromaClient.getCollection({ name: 'bios' });
+        console.log(sex, preference, goal);
 
-        const bios = await collection.get({
+
+        const bioCollection = await chromaClient.getCollection({ name: 'bios' });
+
+        const bios = await bioCollection.get({
             ids: [userUuid]
         });
 
-        if (bios.documents.length > 0) {
-            const matches = await collection.query({
-                queryTexts: [bios.documents[0]],
+        if (bios.documents.length > 0 && sex && goal) {
+            let where = {
                 where: {
                     'uuid': {
                         '$ne': userUuid
                     }
                 },
-                nResults: 1
-            });
+                '$and': {
+                    'goal': {
+                        '$eq': goal
+                    }
+                }
+            };
 
-            console.log(matches);
+            if (preference) {
+                where['$and'] = {
+                    'sex': preference
+                }
+            }
+            else {
+                where['$or'] = [{
+                    'sex': 'Male'
+                }, {
+                    'sex': 'Female'
+                }];
+
+                where['$or'] = [{
+                    'preference': sex
+                }, {
+                    'preference': null
+                }];
+            }
+
+            console.log(where);
+
+            // const matches = await bioCollection.query({
+            //     queryTexts: [bios.documents[0]],
+            //     //where,
+            //     nResults: 3
+            // });
+
+            // console.log(matches);
         }
 
-        // const results = await bioCollection.query({
-//     queryTexts: [fitness],
-//     nResults: 1
-// });
 
-// console.log(results);
-
-
-        // let bioCollection;
-
-        // const collections = await chromaClient.listCollections();
-        
-        // if (!collections.includes('bios')) {
-        //     bioCollection = await chromaClient.createCollection({ name: 'bios' });
-        // }
-        // else {
-        //     bioCollection = await chromaClient.getCollection({ name: 'bios' });
-        // }
-
-        // const existingBio = await bioCollection.get({
-        //     ids: [`${userId}`],
-        //     where: { 'userId': userId }
-        // });
-
-        // if (existingBio) {
-        //     await bioCollection.update({ 
-        //         ids: [`${userId}`],
-        //         documents: [bio],
-        //         metadatas: [{ userId: userId }] 
-        //     }); 
-        // }
-        // else {
-        //     await bioCollection.add({ 
-        //         ids: [`${userId}`],
-        //         documents: [bio],
-        //         metadatas: [{ userId: userId }] 
-        //     });
-        // }
+        return [];
     } 
     catch (error) {
         console.error(error);
@@ -81,4 +81,87 @@ export default defineEventHandler(async (e) => {
             message: error
         });
     }
- });
+});
+
+
+
+
+// import { getQuery } from 'h3';
+// import prisma from '~/server/utils/prisma';
+// import { ChromaClient } from 'chromadb';
+
+// const chromaClient = new ChromaClient();
+
+// export default defineEventHandler(async (e) => {
+//     const { userUuid } = getQuery(e);
+
+//     try {
+//         const user = await prisma.user.findUnique({
+//             where: {
+//                 uuid: userUuid
+//             }
+//         });
+        
+//         const { sex, preference, goal } = user;
+
+//         console.log(sex, preference, goal);
+
+//         let collection = await chromaClient.getCollection({ name: 'bios' });
+
+//         const bios = await collection.get({
+//             ids: [userUuid]
+//         });
+
+//         if (bios.documents.length > 0 && sex && goal) {
+//             let where = {
+//                 where: {
+//                     'uuid': {
+//                         '$ne': userUuid
+//                     }
+//                 },
+//                 '$and': {
+//                     'goal': {
+//                         '$eq': goal
+//                     }
+//                 }
+//             };
+
+//             if (preference) {
+//                 where['$and'] = {
+//                     'sex': preference
+//                 }
+//             }
+//             else {
+//                 where['$or'] = [{
+//                     'sex': 'Male'
+//                 }, {
+//                     'sex': 'Female'
+//                 }];
+
+//                 where['$or'] = [{
+//                     'preference': sex
+//                 }, {
+//                     'preference': null
+//                 }];
+//             }
+
+//             console.log(where);
+
+//             const matches = await collection.query({
+//                 queryTexts: [bios.documents[0]],
+//                 where,
+//                 nResults: 3
+//             });
+
+//             console.log(matches);
+//         }
+//     } 
+//     catch (error) {
+//         console.error(error);
+            
+//         throw createError({
+//             statusCode: 500,
+//             message: error
+//         });
+//     }
+//  });
