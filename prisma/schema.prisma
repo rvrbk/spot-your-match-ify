@@ -13,6 +13,12 @@ enum Sex {
   Female
 }
 
+enum Preference {
+  Male
+  Female
+  NoPreference
+}
+
 enum Goal {
   Friends
   Romance
@@ -27,10 +33,22 @@ model User {
   country         String?
   profileImageUrl String?         @map("profile_image_url")
   sex             Sex?
-  preference      Sex?
+  preference      Preference?
   goal            Goal?
   createdAt       DateTime        @updatedAt @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Matches {
+  id              Int             @id @default(autoincrement())
+  uuid            String         
+  match_uuid      String
+  distance        Float
+  reason          String
+  createdAt       DateTime        @updatedAt @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  @@map("matches")
 }

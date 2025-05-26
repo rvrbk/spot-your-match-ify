@@ -67,7 +67,34 @@ export default defineEventHandler(async (e) => {
                 nResults: 3
             });
 
-            console.log(matches);
+            if (preference) {
+                where['$and'] = {
+                    'sex': preference
+                }
+            }
+            else {
+                where['$or'] = [{
+                    'sex': 'Male'
+                }, {
+                    'sex': 'Female'
+                }];
+
+                where['$or'] = [{
+                    'preference': sex
+                }, {
+                    'preference': null
+                }];
+            }
+
+            console.log(where);
+
+            // const matches = await bioCollection.query({
+            //     queryTexts: [bios.documents[0]],
+            //     //where,
+            //     nResults: 3
+            // });
+
+            // console.log(matches);
         }
 
 

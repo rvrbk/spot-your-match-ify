@@ -27,8 +27,9 @@
                             <div class="flex justify-between items-center mt-2">
                                 <label>What is your preference?</label> 
                                 <div class="flex w-2/5 md:w-1/2">
-                                    <select class="select" v-model="preference" @change="handlePreferenceChange">
-                                        <option value="">No preference</option>
+                                    <select class="select" :class="!preference ? 'animate-pulse' : ''" v-model="preference" @change="handlePreferenceChange">
+                                        <option value=""></option>
+                                        <option value="NoPreference">No preference</option>
                                         <option value="Female">Female</option>
                                         <option value="Male">Male</option>
                                     </select>
@@ -76,9 +77,10 @@
     const loading = ref(false);
 
     const spotifyId = ref(null);
+    const uuId = ref(null);
     const displayName = ref('');
     const profileImageUrl = ref('');
-    const preference = ref('');
+    const preference = ref(null);
     const sex = ref(null);
     const goal = ref(null);
 
@@ -115,7 +117,7 @@
             await $fetch('/api/user/update', {
                 method: 'post',
                 body: {
-                    spotifyId: spotifyId.value,
+                    userUuId: uuId.value,
                     sex: sex.value === '' ? null : sex.value
                 }
             });
@@ -132,7 +134,7 @@
             await $fetch('/api/user/update', {
                 method: 'post',
                 body: {
-                    spotifyId: spotifyId.value,
+                    userUuId: uuId.value,
                     preference: preference.value === '' ? null : preference.value
                 }
             });
@@ -149,7 +151,7 @@
             await $fetch('/api/user/update', {
                 method: 'post',
                 body: {
-                    spotifyId: spotifyId.value,
+                    userUuId: uuId.value,
                     goal: goal.value === '' ? null : goal.value
                 }
             });
@@ -179,15 +181,16 @@
             newUser.value = isNewUser;
 
             sex.value = user.sex;
-            preference.value = !user.preference ? '' : user.preference;
+            preference.value = user.preference;
             goal.value = user.goal;
             displayName.value = user.displayName;
             profileImageUrl.value = user.profileImageUrl;
             spotifyId.value = user.spotifyId;
+            uuId.value = user.uuid;
 
             const response = await $fetch(`/api/bio/get?userUuId=${user.uuid}`);
 
-            if (response.length > 0) {
+            if (response.length > 0 && false) {
                 bio.value = response[0];
             }
             else {
