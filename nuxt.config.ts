@@ -16,7 +16,5 @@ export default defineNuxtConfig({
       spotifyRedirectUri: process.env.SPOTIFY_REDIRECT_URI
     }
   },
-  modules: [
-    '@nuxtjs/tailwindcss'
-  ]
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-auth-utils']
 });

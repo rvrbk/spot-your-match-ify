@@ -11,18 +11,9 @@
 </template>
 
 <script setup>
-    import { defineProps } from 'vue';
+    import { useSpotify } from '~/composables/useSpotify';
 
-    const props = defineProps({
-        connected: {
-            type: Boolean,
-            required: true
-        },
-        disconnect: {
-            type: Function,
-            required: true
-        }
-    });
+    const { disconnect } = useSpotify();
 
     const menuItems = [{
         to: '/',

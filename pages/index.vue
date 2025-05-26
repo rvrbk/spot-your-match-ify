@@ -2,30 +2,16 @@
     <div v-if="loading" class="flex items-center justify-center h-screen relative z-20">
         <div class="spinner w-16 h-16 border-4 border-dotted border-brazilGreen rounded-full animate-spin"></div>
     </div>
-    <div v-if="connected" class="text-center mt-20 text-6xl font-yesteryear text-brazilYellow mb-10 z-20 relative">
-        Spot Your MatchIfy
-    </div>
+    <Logo v-if="isConnected()" />
     <div class="flex justify-center h-screen">
-        <div v-if="!connected" class="flex items-center font-titanOne text-center text-xl md:text-3xl text-brazilGreen">
+        <div v-if="!isConnected()" class="flex items-center font-titanOne text-center text-xl md:text-3xl text-brazilGreen">
             <a href="#" @click.prevent="handleSpotifyConnectClick">Connect with Spotify</a>
         </div>
-        <div class="container -mt-20 md:w-full w-4/5" v-if="connected">
-            <div v-if="!loading" class="absolute bg-brazilGreen w-screen top-0 left-0 h-[600px] md:h-[1000px]"></div>
-            <div class="flex flex-col justify-center items-center mt-20">
-                <div class="mb-20 text-xl md:text-3xl font-titanOne text-brazilYellow text-center z-20 relative">
-                    <p v-if="!newUser">Welcome back {{ displayName }}!</p>
-                    <p v-if="newUser">Welcome to SpotYourMatchIfy {{ displayName }}!</p>
-                </div>
-                <img :src="profileImageUrl" class="w-64 h-64 rounded-full border-[10px] border-brazilYellow relative z-20">
-                <div class="w-screen absolute mt-200">
-                    <div class="absolute w-screen aspect-square rounded-full bg-brazilYellow left-0 -ml-[50%] top-32"></div>
-                    <div class="absolute w-screen aspect-square rounded-full bg-brazilYellow left-0 -ml-1/2 top-10"></div>
-                    <div class="absolute w-screen aspect-square rounded-full bg-brazilYellow right-0 -mr-[50%]"></div>
-                </div>
-            </div>
+        <div class="container -mt-20 md:w-full w-4/5" v-if="isConnected()">
+            <Header v-if="isConnected()" :localUser="localUser" :newUser="newUser" :loading="loading" />            
             <div class="flex justify-center mt-20">
                 <div class="flex flex-col relative z-20 text-brazilGreen md:w-4/5 lg:w-1/2 container">
-                    <Navigation :connected="connected" :disconnect="disconnect" />
+                    <Navigation />
                     <div class="flex flex-col justify-between mt-20">
                         <div class="mb-20">
                             <div class="flex justify-between items-center">
@@ -74,14 +60,17 @@
 </template>
 
 <script setup>
-    import { onMounted } from 'vue';
+    import { onMounted, watch } from 'vue';
     import { useSpotify } from '~/composables/useSpotify';
     import { useLocalStorage } from '~/composables/useLocalStorage';
     import MarkdownIt from 'markdown-it';
     import Navigation from '~/components/Navigation.vue';
+    import Logo from '~/components/Logo.vue';
+    import Header from '~/components/Header.vue';
+
+    const { isConnected } = useSpotify();
 
     const bio = ref('');
-    const connected = ref(false);
     const newUser = ref(true);
     const editMode = ref(false);
     const loading = ref(false);
@@ -92,6 +81,8 @@
     const preference = ref('');
     const sex = ref(null);
     const goal = ref(null);
+
+    const localUser = ref(null);
 
     let accessToken;
 
@@ -169,7 +160,7 @@
     }
 
     const handleProfile = async () => {
-        const { getTopTracks } = useSpotify();
+        const { getTopTracks, setConnected } = useSpotify();
         const { getItem, setItem } = useLocalStorage();
         
         const md = new MarkdownIt();
@@ -179,9 +170,12 @@
         const { accessToken, user, isNewUser } = await $fetch(`/api/spotify/login?code=${getItem('spotifyCode')}`);
 
         if (user && accessToken) {
+            localUser.value = user;
+
             setItem('uuid', user.uuid);
 
-            connected.value = true;
+            setConnected(true);
+
             newUser.value = isNewUser;
 
             sex.value = user.sex;
@@ -240,14 +234,6 @@
 
             setLoading(false);
         }
-    }
-
-    const disconnect = () => {
-        const { removeItem } = useLocalStorage();
-        
-        removeItem('spotifyCode');
-
-        connected.value = false;
     }
 
     const setLoading = (isLoading) => {

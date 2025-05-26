@@ -110,6 +110,8 @@ export default defineEventHandler(async (e) => {
 
         await redis.set('spotify:userId', user.id);
 
+        await setUserSession(e, { user });
+
         return {
             accessToken,
             user,

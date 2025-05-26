@@ -1,9 +1,13 @@
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
+import { useState } from '#app';
 import axios from 'axios';
+import { useLocalStorage } from './useLocalStorage';
  
 export function useSpotify() {
     const isLoading = ref(false);
     const error = ref(null);
+    
+    const connected = useState('connected', () => false);
 
     async function spotifyFetch(endpoint, accessToken, options = {}) {
         isLoading.value = true;
@@ -20,7 +24,7 @@ export function useSpotify() {
             return response;
         }
         catch (err) {
-            error.value = err.message || 'Failed to fetch from Spotify API';
+            error.value = err.message;
             throw err;
         }
         finally {
@@ -40,12 +44,32 @@ export function useSpotify() {
         return await spotifyFetch(`/me/top/tracks?time_range=${timeRange}&limit=${limit}`, accessToken);
     }
 
+    function disconnect() {
+        const { removeItem } = useLocalStorage();
+
+        removeItem('spotifyCode');
+
+        connected.value = false;
+    }
+
+    function  setConnected(bool) {
+        connected.value = bool;
+    }
+
+    function isConnected() {
+        return connected.value;
+    }
+
     return {
         isLoading,
         error,
+        connected,
         spotifyFetch,
         getUserProfile,
         getRecentlyPlayed,
-        getTopTracks
+        getTopTracks,
+        disconnect,
+        isConnected,
+        setConnected
     }
 }
